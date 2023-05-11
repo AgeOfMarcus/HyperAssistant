@@ -3,8 +3,6 @@ from langchain.tools.base import Field, Any
 from datetime import datetime
 import json
 
-# make sure to give the time with each message
-# try update.message.date ? 
 class SchedulerTool(BaseTool):
     name = 'Scheduler'
     description = (

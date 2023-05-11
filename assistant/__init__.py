@@ -7,7 +7,12 @@ import os
 from aiogram import types, Bot
 # local files
 from .prompt import ASSISTANT_PREFIX, ASSISTANT_FORMAT_INSTRUCTIONS, ASSISTANT_SUFFIX
-from .tools import SchedulerTool, TelegramTool, NotifyTool
+from .tools import (
+    SchedulerTool, 
+    TelegramTool, 
+    NotifyTool,
+    WeatherTool
+)
 
 class Assistant(object):
     """HyperAssistant chatbot"""
@@ -40,7 +45,8 @@ class Assistant(object):
         self.tools = [
             SchedulerTool(user=user, tasks=tasks),
             TelegramTool(bot=bot, user=user),
-            NotifyTool(user=user)
+            NotifyTool(user=user),
+            WeatherTool(user=user)
         ]
         self.memory = ConversationBufferMemory(
             memory_key = 'chat_history',

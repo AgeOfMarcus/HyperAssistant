@@ -30,6 +30,8 @@ bot.vars.users = users
 bot.vars.tasks = tasks
 
 async def do_task(task: Task):
+    """Get's prompt from task, and runs in user's assistant,
+        marking complete when done."""
     if not (user := users.get(task.chat_id)):
         print(f'[!] <tsk> Task contains invalid chat_id: {task.chat_id}')
         return

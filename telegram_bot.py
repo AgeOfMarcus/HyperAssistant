@@ -14,12 +14,47 @@ class vars:
     users: Users = None
     tasks: Tasks = None
 
+def get_keyboard():
+    """Returns a Telegram keyboard with a button to share the user's location"""
+    keyboard = types.ReplyKeyboardMarkup()
+    button = types.KeyboardButton("Share Position", request_location=True)
+    keyboard.add(button)
+    return keyboard
+
 @dp.message_handler(commands=['start'])
 async def new_conversation(message: types.Message):
     """Clears the previous conversation"""
     if (user := vars.users.get(message['from'].id)):
         user.assistant.wipe_memory()
         await message.reply('[+] New Conversation')
+
+@dp.message_handler(content_types=['location'])
+async def handle_location(message: types.Message):
+    """Update users location"""
+    if (user := vars.users.get(message['from'].id)):
+        user.update({'last_location': {
+            'lat': message.location.latitude, 
+            'lon': message.location.longitude
+        }})
+        await message.answer('[+] Updated location', reply_markup=types.ReplyKeyboardRemove())
+
+@dp.message_handler(commands=['location'])
+async def update_location(message: types.Message):
+    """Request users location"""
+    if (user := vars.users.get(message['from'].id)):
+        await message.answer('[+] Requesting location...', reply_markup=get_keyboard())
+
+@dp.message_handler(commands=['help'])
+async def help_command(message: types.Message):
+    """Send help message"""
+    if (user := vars.users.get(message['from'].id)):
+        await message.answer("""
+        HyperAssistant - Help
+        ---------------------
+        /help - Show this message
+        /start - Clear the current conversation
+        /location - Update your location
+        """)
 
 @dp.message_handler()
 async def handle_all(message: types.Message):

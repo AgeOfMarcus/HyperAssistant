@@ -14,6 +14,7 @@ class User(object):
     ifttt_webhook: str
     email: str
     notify_prefer: str
+    last_location: dict
     created: str
     updated: str
 
@@ -33,6 +34,7 @@ class User(object):
         self.chat_id = data['chat_id']
         self.ifttt_webhook = data.get('ifttt_webhook')
         self.email = data.get('email')
+        self.last_location = data.get('last_location', {})
         self.notify_prefer = data['notify_prefer']
         self.created = data['created']
         self.updated = data['updated']
@@ -42,7 +44,7 @@ class User(object):
 
     def update(self, data: dict):
         if not all(map(
-            lambda k: k in ['ifttt_webhook', 'email', 'notify_prefer'],
+            lambda k: k in ['ifttt_webhook', 'email', 'notify_prefer', 'last_location'],
             data.keys()
         )):
             raise ValueError('Cannot set values not in (ifttt_webhook, email, notify_prefer)')
