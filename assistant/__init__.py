@@ -11,7 +11,8 @@ from .tools import (
     SchedulerTool, 
     TelegramTool, 
     NotifyTool,
-    WeatherTool
+    WeatherTool,
+    DDGSearchTool
 )
 
 class Assistant(object):
@@ -46,7 +47,8 @@ class Assistant(object):
             SchedulerTool(user=user, tasks=tasks),
             TelegramTool(bot=bot, user=user),
             NotifyTool(user=user),
-            WeatherTool(user=user)
+            WeatherTool(user=user),
+            DDGSearchTool()
         ]
         self.memory = ConversationBufferMemory(
             memory_key = 'chat_history',

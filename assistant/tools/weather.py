@@ -15,7 +15,7 @@ class WeatherTool(BaseTool):
 
     def _run(self, *args, **kwargs):
         if (loc := self.user.last_location):
-            resp = requests.get('https://wttr.in/{}?format=3'.format(
+            resp = requests.get('https://wttr.in/{}'.format(
                 f'{loc["lat"]},{loc["lon"]}'
             ))
             return resp.text

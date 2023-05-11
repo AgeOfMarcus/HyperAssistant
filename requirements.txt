@@ -4,3 +4,4 @@ aiogram
 pocketbase
 mjms
 python-dotenv
+duckduckgo-search

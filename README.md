@@ -43,3 +43,4 @@ In this situation, the task is being completed in a separate thread, so there is
 * `TelegramTool` for sending telegram messages
 * `SchedulerTool` for creating scheduled tasks in the db
 * `WeatherTool` for getting the current weather for the last location sent by the user (using `/location`)
+* `DDGSearchTool` for searching DuckDuckGo
