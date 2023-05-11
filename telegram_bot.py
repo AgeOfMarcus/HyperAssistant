@@ -60,6 +60,7 @@ async def help_command(message: types.Message):
 async def handle_all(message: types.Message):
     """Handles all text messages"""
     if (user := vars.users.get(message['from'].id)):
+        await message.answer_chat_action("typing")
         print('[*] Responding to message from:', message['from'].username)
         resp = await user.assistant.ask_message(message)
         if type(resp) == dict:
