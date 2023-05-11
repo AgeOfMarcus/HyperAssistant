@@ -48,7 +48,7 @@ class Assistant(object):
             TelegramTool(bot=bot, user=user),
             NotifyTool(user=user),
             WeatherTool(user=user),
-            DDGSearchTool()
+            DDGSearchTool(user=user),
         ]
         self.memory = ConversationBufferMemory(
             memory_key = 'chat_history',

@@ -42,6 +42,7 @@ class User(object):
 
         self.chat_hist = chat_hist or []
         self.assistant = Assistant(self, tasks, bot)
+        self._events = []
 
     def update(self, data: dict):
         if not all(map(
