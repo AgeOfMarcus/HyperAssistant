@@ -35,6 +35,7 @@ class NotifyTool(BaseTool):
         ok, args = self.parse_args(*args, **kwargs)
         if not ok:
             return args
+        self.user._events.append(f'Created Notification[{args["text"]}]')
         return self.user.notify(args['text'], url=args.get('url'))
 
     async def _arun(self, *args, **kwargs):

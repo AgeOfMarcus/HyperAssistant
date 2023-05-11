@@ -17,6 +17,7 @@ class User(object):
     last_location: dict
     created: str
     updated: str
+    _events: list[str] = []
 
     _email_template: str = f'''
     <h1>New Message from <a href="https://t.me/{os.getenv('TELEGRAM_BOT_USERNAME')}">@HyperAssistant</a></h1>

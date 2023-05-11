@@ -41,6 +41,7 @@ class SchedulerTool(BaseTool):
                 run_at_dt,
                 task_str
             )
+            self.user._events.append(f'Created Task[{task.id}]')
             return 'Created scheduled task: ' + repr(task)
         except Exception as e:
             return 'Something went wrong trying to create task: ' + str(e)

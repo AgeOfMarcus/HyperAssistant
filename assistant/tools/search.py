@@ -1,4 +1,5 @@
 from langchain.tools import BaseTool
+from langchain.tools.base import Field, Any
 #from googlesearch_py import search
 from duckduckgo_search import ddg
 
@@ -24,7 +25,10 @@ class DDGSearchTool(BaseTool):
         "Returns a list of dicts containing a url, title, and description."
     )
 
+    user: Any = Field(default=None)
+
     def _run(self, query: str) -> list:
+        self.user._events.append(f'Searched DuckDuckGo[{query}]')
         return ddg(query)
     
     async def _arun(self, query: str) -> list:

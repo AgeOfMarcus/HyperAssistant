@@ -65,6 +65,9 @@ async def handle_all(message: types.Message):
         if type(resp) == dict:
             resp = resp['output']
         await message.answer(resp)
+        if user._events:
+            await message.answer('[events] ' + ', '.join(user._events))
+        user._events = []
         print('[*] Done responding to message from:', message['from'].username)
 
 def run(on_startup: callable = None):

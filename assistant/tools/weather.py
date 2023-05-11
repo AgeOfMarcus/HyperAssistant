@@ -18,6 +18,7 @@ class WeatherTool(BaseTool):
             resp = requests.get('https://wttr.in/{}'.format(
                 f'{loc["lat"]},{loc["lon"]}'
             ))
+            self.user._events.append(f'Got Weather[{loc}]')
             return resp.text
         else:
             return 'Error: User has not set location. Please instruct the user to use the `/location` command.'
