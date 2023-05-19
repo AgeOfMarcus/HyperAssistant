@@ -1,6 +1,7 @@
 from langchain.agents import initialize_agent, AgentType
 from langchain.chat_models import ChatOpenAI
 from langchain.chains.conversation.memory import ConversationBufferMemory
+from langchain.callbacks.base import BaseCallbackHandler
 from datetime import datetime
 import os
 # typing
@@ -14,6 +15,9 @@ from .tools import (
     WeatherTool,
     DDGSearchTool
 )
+
+class EmptyCallbackHandler(BaseCallbackHandler):
+    pass
 
 class Assistant(object):
     """HyperAssistant chatbot"""
@@ -66,7 +70,8 @@ class Assistant(object):
                 'format_instructions': ASSISTANT_FORMAT_INSTRUCTIONS,
                 'suffix': ASSISTANT_SUFFIX
             },
-            verbose=verbose
+            verbose=verbose,
+            callbacks=[EmptyCallbackHandler()]
         )
 
     def wipe_memory(self):
@@ -82,5 +87,5 @@ class Assistant(object):
     async def ask(self, text: str):
         """Calls the agent with a text string."""
         dt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        prompt = f'[User @ {dt}]: {text}'
+        prompt = f'[BgTask @ {dt}]: {text}'
         return await self.agent._acall({'input': prompt, 'chat_history': self.agent.memory.chat_memory.messages})

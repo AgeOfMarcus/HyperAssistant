@@ -6,7 +6,7 @@ class Task(object):
     id: str
     chat_id: int
     run_at: str
-    task: str
+    task_steps: list
     completed: bool
     created: str
     updated: str
@@ -20,7 +20,7 @@ class Task(object):
         self.id = data['id']
         self.chat_id = data['chat_id']
         self.run_at = data['run_at']
-        self.task = data['task']
+        self.task_steps = data['task_steps']
         self.completed = data['completed']
         self.created = data['created']
         self.updated = data['updated']
@@ -44,17 +44,22 @@ class Task(object):
         return delta
 
     def __repr__(self):
-        return f'<Task(id={self.id}, chat_id={self.chat_id}, time_until={str(self.time_until_due())})>'
+        return f'<Task(steps={len(self.task_steps)}, chat_id={self.chat_id}, time_until={str(self.time_until_due())})>'
 
-    def get_prompt(self):
+    def get_prompt(self, steps: list = None) -> str:
         """Formats task as string to be passed to agent."""
         created_at = datetime.fromisoformat(self.created.rstrip('Z'))
+        steps = steps or self.task_steps
+        if len(steps) == 1:
+            task = steps[0]
+        else:
+            task = '. '.join(steps)
         return f"""
         Please complete the task below. As HyperAssistant is running this task in a background thread, any results or messages that need to be displayed to the Human will be sent by HyperAssistant using a tool provided.
         -----
         Task
         -----
-        {self.task}
+        {task}
         -----
         Issued at {self.created}, to be completed now ({self.time_until_due(now=created_at)} from the date it was issued). Chat ID: {self.chat_id}.
         """
@@ -72,13 +77,13 @@ class Tasks(object):
         self.pb = pb
         self.col = self.pb.collection(collection_name)
 
-    def add(self, chat_id: int, run_at: datetime, task: str) -> Task:
+    def add(self, chat_id: int, run_at: datetime, task_steps: list) -> Task:
         """
         Adds a new task to the db
 
         :param chat_id: int - chat_id of the user that created task
         :param run_at: datetime - time to run the task (must be in future)
-        :param task: str - task string
+        :param task_steps: list[str] - list of steps to complete task
 
         :returns: Task - task object
         """
@@ -88,7 +93,7 @@ class Tasks(object):
         record = self.col.create({
             'chat_id': chat_id,
             'run_at': run_at.strftime('%Y-%m-%d %H:%M:%S'),
-            'task': task,
+            'task_steps': task_steps,
             'completed': False
         })
         return Task(record.collection_id, self)

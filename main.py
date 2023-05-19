@@ -8,6 +8,7 @@ import os
 from users import Users
 import telegram_bot as bot
 from tasks import Tasks, Task
+from task_manager import TaskManager, convert_langchain_tools
 
 # setup everything
 pb = PocketBase(os.getenv('PB_URL'))
@@ -31,14 +32,35 @@ bot.vars.tasks = tasks
 
 async def do_task(task: Task):
     """Get's prompt from task, and runs in user's assistant,
-        marking complete when done."""
+        marking complete when done.
+        Uses the Task Manager to run tasks.
+    """
     if not (user := users.get(task.chat_id)):
         print(f'[!] <tsk> Task contains invalid chat_id: {task.chat_id}')
         return
 
     prompt = task.get_prompt()
+    taskman = TaskManager(
+        prompt,
+        convert_langchain_tools(user.assistant.tools),
+        user.assistant.llm,
+        allow_repeat_tasks=False
+    )
     print('[*] <tsk> Running task:', task)
-    await user.assistant.ask(prompt)
+
+    #await user.assistant.ask(prompt)
+    while not taskman.goal_completed:
+        if not taskman.current_tasks:
+            if taskman.ensure_goal_complete():
+                break
+            continue
+        current_task = taskman.current_tasks.pop(0)
+        if taskman.check_task_needed(current_task):
+            print('[*] <tmg> Running task step:', current_task)
+            prompt = taskman.format_task_str(current_task, include_completed_tasks=True)
+            resp = await user.assistant.ask(prompt)
+            taskman.refine(current_task, resp)
+
     print(f'[*] <tsk> Finshed task: {task.id}. Marking as completed.')
     task.mark_completed()
 

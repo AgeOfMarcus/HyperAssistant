@@ -8,7 +8,7 @@ class SchedulerTool(BaseTool):
     description = (
         'Useful for scheduling tasks to be ran in at a future time.'
         'Use this to schedule tasks that need to be ran at a later time.'
-        'Accepts a (properly) JSON formatted dictionary with two keys: "run_at" in the format "2022-01-01 10:00:00", and "task" with a string containing the task description exactly as it was given.'
+        'Accepts a (properly) JSON formatted dictionary with two keys: "run_at" in the format "2022-01-01 10:00:00", and "task_steps" with a list of strings containing the exact steps needed to complete the desired task.'
         'Here is an example of how you should word your "task" input: "Tell user to have a happy birthday". Or "Remind user to eat".'
         'Returns "ok" if successful, otherwise an error string describing what was entered wrong.'
     )
@@ -27,8 +27,8 @@ class SchedulerTool(BaseTool):
 
         if not (run_at := args.get('run_at')):
             return 'Error: Key missing: "run_at"'
-        if not (task_str := args.get('task')):
-            return 'Error: Key missing: "task"'
+        if not (task_steps := args.get('task_steps')):
+            return 'Error: Key missing: "task_steps"'
 
         try:
             run_at_dt = datetime.fromisoformat(run_at)
@@ -39,9 +39,9 @@ class SchedulerTool(BaseTool):
             task = self.tasks.add(
                 self.user.chat_id,
                 run_at_dt,
-                task_str
+                task_steps
             )
-            self.user._events.append(f'Created Task[{task.id}]')
+            self.user._events.append(f'Created {repr(task)}')
             return 'Created scheduled task: ' + repr(task)
         except Exception as e:
             return 'Something went wrong trying to create task: ' + str(e)
